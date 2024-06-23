@@ -39,10 +39,12 @@ class _TabBasedBottomNavigationBarState extends State<TabBasedBottomNavigationBa
       bottomNavigationBar: BottomNavigationBar(items: const [
         BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: "Home"),
         BottomNavigationBarItem(icon: Icon(Icons.map_outlined), label: "Map"),
-        BottomNavigationBarItem(icon: Icon(Icons.map_outlined), label: "Locations"),
-        BottomNavigationBarItem(icon: Icon(Icons.pin_drop_outlined), label: "About")
+        BottomNavigationBarItem(icon: Icon(Icons.pin_drop_outlined), label: "Locations"),
+        BottomNavigationBarItem(icon: Icon(Icons.settings), label: "About")
       ], currentIndex: _selectedTabIndex,
-          onTap: _handleTabSelection));
+          onTap: _handleTabSelection,
+        selectedItemColor: Colors.teal,
+        unselectedItemColor: Colors.grey));
   }
 }
 
