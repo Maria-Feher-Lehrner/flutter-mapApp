@@ -20,28 +20,42 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+    _logger.i("HomePage: initState called");
     _loadLocations();
   }
 
   Future<void> _loadLocations() async {
     final prefs = await SharedPreferences.getInstance();
+    if (!mounted) return;  // Check if widget is still mounted
     setState(() {
       _locations = prefs.getStringList('locations') ?? [];
     });
+    _logger.i("HomePage: Loaded locations - $_locations");
   }
 
   Future<void> _saveLocation(String location) async {
     final prefs = await SharedPreferences.getInstance();
+    if (!mounted) return;  // Check if widget is still mounted
     setState(() {
       _locations.add(location);
       prefs.setStringList('locations', _locations);
     });
+    _logger.i("HomePage: Saved location - $location");
   }
 
   Future<void> _scanQrCode() async {
-    final result = await scanQrCode(context);
-    if (result != null) {
-      _saveLocation(result);
+    _logger.i("HomePage: _scanQrCode called");
+    try {
+      final result = await scanQrCode(context);
+      _logger.i("HomePage: QR scan result - $result");
+
+      if (result != null && result.isNotEmpty) {
+        await _saveLocation(result);
+      } else {
+        _logger.e("HomePage: QR scan failed or result is empty");
+      }
+    } catch (e) {
+      _logger.e("HomePage: Error during QR scan - $e");
     }
   }
 

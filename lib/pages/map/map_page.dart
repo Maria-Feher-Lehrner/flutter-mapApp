@@ -3,6 +3,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:logger/logger.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../service_locator.dart';
 import '../../services/position/geolocation_service.dart';
@@ -29,7 +30,9 @@ class _MapPageState extends State<MapPage> {
   @override
   void initState() {
     super.initState();
+    _logger.i("MapPage: initState called");
     _mapController = MapController();
+    _loadLocations();
     /*_geolocationService.getCurrentGeolocation().then((value) {
       _logger.i("Geolocation: $value");
       setState(() {
@@ -38,6 +41,34 @@ class _MapPageState extends State<MapPage> {
       });
     }).catchError((error) => _logger.e(error));
     // then und catch sollte immer vorhanden sein, damit user nicht kryptische Fehlermeldungen erhält, sondern gezielt etwas angezeigt bekommen kann*/
+  }
+
+  Future<void> _loadLocations() async {
+    final prefs = await SharedPreferences.getInstance();
+    final locations = prefs.getStringList('locations') ?? [];
+    _logger.i("MapPage: Loaded locations - $locations");
+    if (!mounted) return;  // Check if widget is still mounted
+    setState(() {
+      for (var location in locations) {
+        final parts = location.split(':');
+        if (parts.length == 3) {
+          final lat = double.tryParse(parts[0]);
+          final lng = double.tryParse(parts[1]);
+          final title = parts[2];
+          if (lat != null && lng != null) {
+            _markers.add(Marker(
+              point: LatLng(lat, lng),
+              child: Column(
+                children: [
+                  Icon(Icons.location_pin, color: Colors.red),
+                  Text(title, style: TextStyle(color: Colors.black)),
+                ],
+              ),
+            ));
+          }
+        }
+      }
+    });
   }
 
   @override
@@ -55,7 +86,9 @@ class _MapPageState extends State<MapPage> {
       _mapController.move(latLngPosition, 10);
       _markers.add(Marker(
           point: latLngPosition,
-          child: const FlutterLogo()));
+          child: const FlutterLogo(),
+      ));
+      if (!mounted) return;  // Check if widget is still mounted
       setState(() {
         _currentPosition = value;
       });

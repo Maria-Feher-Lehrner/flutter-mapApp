@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
@@ -12,21 +11,22 @@ Future<String?> scanQrCode(BuildContext context) async {
 
 class QrScannerWidget extends StatefulWidget {
   @override
-  _QrScannerWidgetState createState() => _QrScannerWidgetState();
+  QrScannerWidgetState createState() => QrScannerWidgetState();
 }
 
-class _QrScannerWidgetState extends State<QrScannerWidget> with WidgetsBindingObserver {
+class QrScannerWidgetState extends State<QrScannerWidget> with WidgetsBindingObserver {
   final MobileScannerController controller = MobileScannerController();
-  StreamSubscription<Object?>? _subscription;
+  StreamSubscription<BarcodeCapture>? _subscription;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
 
-    _subscription = controller.barcodes.listen((barcode) {
-      if (barcode != null) {
-        _handleBarcode(barcode);
+    _subscription = controller.barcodes.listen((BarcodeCapture barcodeCapture) {
+      final List<Barcode> barcodes = barcodeCapture.barcodes;
+      if (barcodes.isNotEmpty) {
+        _handleBarcode(barcodes.first);
       }
     });
 
@@ -43,7 +43,27 @@ class _QrScannerWidgetState extends State<QrScannerWidget> with WidgetsBindingOb
 
   void _handleBarcode(Barcode barcode) {
     final String code = barcode.rawValue ?? '---';
-    Navigator.pop(context, code);
+    print('QR Code scanned: $code'); // Add log
+
+    final parts = code.split(';');
+    if (parts.length == 3) {
+      final latPart = parts[0].split('=');
+      final lonPart = parts[1].split('=');
+      if (latPart.length == 2 && lonPart.length == 2) {
+        final lat = double.tryParse(latPart[1]);
+        final lon = double.tryParse(lonPart[1]);
+        final title = parts[2];
+        if (lat != null && lon != null) {
+          final location = '$lat:$lon:$title';
+          print('Parsed location: $location'); // Add log
+          Navigator.pop(context, location);
+          return;
+        }
+      }
+    }
+
+    print('Failed to parse QR code'); // Add log
+    Navigator.pop(context, null);
   }
 
   @override
@@ -54,7 +74,12 @@ class _QrScannerWidgetState extends State<QrScannerWidget> with WidgetsBindingOb
 
     switch (state) {
       case AppLifecycleState.resumed:
-        _subscription = controller.barcodes.listen(_handleBarcode);
+        _subscription = controller.barcodes.listen((BarcodeCapture barcodeCapture) {
+          final List<Barcode> barcodes = barcodeCapture.barcodes;
+          if (barcodes.isNotEmpty) {
+            _handleBarcode(barcodes.first);
+          }
+        });
         controller.start();
         break;
       case AppLifecycleState.inactive:
