@@ -97,20 +97,35 @@ class _MapPageState extends State<MapPage> {
     });
   }
 
+  void _resetMapToCurrentLocation() {
+    if (_currentPosition != null) {
+      LatLng latLngPosition = LatLng(_currentPosition!.latitude, _currentPosition!.longitude);
+      _mapController.move(latLngPosition, 10);
+    }
+  }
   @override
   Widget build(BuildContext context) {
     _logger.i("Building map page");
-    return Stack(children: [
-      Center(child: Text(_currentPosition.toString())),
-      FlutterMap(
-          mapController: _mapController,
-          options: MapOptions(onMapReady: _handleMapReady),
+    return Scaffold(
+      body: Stack(
           children: [
-        TileLayer(
-            urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png'),
-        MarkerLayer(markers: _markers)
-      ])
-    ]);
+            FlutterMap(
+                mapController: _mapController,
+                options: MapOptions(onMapReady: _handleMapReady),
+                children: [
+                  TileLayer(
+                      urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png'
+                  ),
+                  MarkerLayer(markers: _markers)
+                ]
+            )
+          ]
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _resetMapToCurrentLocation,
+        child: Icon(Icons.my_location),
+      ),
+    );
   }
 }
 
