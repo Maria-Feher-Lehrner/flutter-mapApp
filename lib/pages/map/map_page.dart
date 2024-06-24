@@ -60,8 +60,8 @@ class _MapPageState extends State<MapPage> {
               point: LatLng(lat, lng),
               child: Column(
                 children: [
-                  Icon(Icons.location_pin, color: Colors.red),
-                  Text(title, style: TextStyle(color: Colors.black)),
+                  const Icon(Icons.location_pin, color: Colors.red),
+                  Text(title, style: const TextStyle(color: Colors.black)),
                 ],
               ),
             ));
@@ -123,7 +123,7 @@ class _MapPageState extends State<MapPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _resetMapToCurrentLocation,
-        child: Icon(Icons.my_location),
+        child: const Icon(Icons.my_location),
       ),
     );
   }
