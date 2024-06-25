@@ -2,13 +2,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
-/*Future<String?> scanQrCode(BuildContext context) async {
-  return await Navigator.push(
-    context,
-    MaterialPageRoute(builder: (context) => QrScannerWidget()),
-  );
-}*/
-
 class QrScannerWidget extends StatefulWidget {
 
   final Function(String) onScanned;
@@ -47,9 +40,8 @@ class QrScannerWidgetState extends State<QrScannerWidget> with WidgetsBindingObs
 
   void _handleBarcode(Barcode barcode) {
     final String code = barcode.rawValue ?? '---';
-    print('QR Code scanned: $code'); // Add log
 
-    final parts = code.split(':'); // Split by colon assuming format is "lat:lon:title"
+    final parts = code.split(':');
     if (parts.length == 3) {
       final latPart = parts[0].split('=');
       final lonPart = parts[1].split('=');
@@ -60,7 +52,6 @@ class QrScannerWidgetState extends State<QrScannerWidget> with WidgetsBindingObs
 
         if (lat != null && lon != null) {
           final location = '$lat:$lon:$title';
-          print('Parsed location: $location'); // Add log
           widget.onScanned(location);
           Navigator.of(context).pop;
           return;
@@ -68,7 +59,6 @@ class QrScannerWidgetState extends State<QrScannerWidget> with WidgetsBindingObs
       }
     }
 
-    print('Failed to parse QR code'); // Add log
     widget.onScanned('');
     Navigator.of(context).pop;
   }
@@ -104,7 +94,7 @@ class QrScannerWidgetState extends State<QrScannerWidget> with WidgetsBindingObs
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('QR Scanner'),
+        title: const Text('QR Scanner'),
       ),
       body: MobileScanner(
         controller: controller,

@@ -66,8 +66,3 @@ class BetterLogger implements Logger{
   }
 
 }
-
-//2.5: better logger hier implementieren
-//2.6: class BetterLogger erstellen mit implements Logger --> Logger package importieren --> 12 methods overriden
-//2.7: log.i Methode ein bisschen abändern.
-//2.8.: jetzt kann man im service_locator easy den alten Logger durch den BetterLogger austauschen
