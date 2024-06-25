@@ -5,7 +5,7 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 class QrScannerWidget extends StatefulWidget {
 
   final Function(String) onScanned;
-  QrScannerWidget({required this.onScanned});
+  const QrScannerWidget({super.key, required this.onScanned});
 
   @override
   QrScannerWidgetState createState() => QrScannerWidgetState();

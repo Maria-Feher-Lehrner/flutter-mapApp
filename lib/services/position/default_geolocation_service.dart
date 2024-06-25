@@ -1,7 +1,6 @@
 import 'package:first_flutter_project/services/position/geolocation_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:geolocator_platform_interface/src/models/position.dart';
 import 'package:logger/logger.dart';
 
 import '../../service_locator.dart';

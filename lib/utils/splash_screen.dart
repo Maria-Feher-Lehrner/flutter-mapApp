@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import '../pages/home/home_page.dart';
 
 class SplashScreen extends StatelessWidget {
+  const SplashScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return AnimatedSplashScreen(

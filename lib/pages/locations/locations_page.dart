@@ -1,6 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
+
 import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -42,12 +41,12 @@ class _LocationsPageState extends State<LocationsPage> {
         title: const Text("Locations"),
       ),
       body: _locations.isEmpty
-          ? Center(child: Text("No locations available"))
+          ? const Center(child: Text("No locations available"))
           : ListView.builder(
         itemCount: _locations.length,
         itemBuilder: (context, index) {
           return ListTile(
-            leading: Icon(Icons.location_pin),
+            leading: const Icon(Icons.location_pin),
             title: Text(_locations[index]),
           );
         },
