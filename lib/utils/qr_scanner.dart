@@ -2,14 +2,18 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
-Future<String?> scanQrCode(BuildContext context) async {
+/*Future<String?> scanQrCode(BuildContext context) async {
   return await Navigator.push(
     context,
     MaterialPageRoute(builder: (context) => QrScannerWidget()),
   );
-}
+}*/
 
 class QrScannerWidget extends StatefulWidget {
+
+  final Function(String) onScanned;
+  QrScannerWidget({required this.onScanned});
+
   @override
   QrScannerWidgetState createState() => QrScannerWidgetState();
 }
@@ -45,7 +49,7 @@ class QrScannerWidgetState extends State<QrScannerWidget> with WidgetsBindingObs
     final String code = barcode.rawValue ?? '---';
     print('QR Code scanned: $code'); // Add log
 
-    final parts = code.split(';');
+    final parts = code.split(':'); // Split by colon assuming format is "lat:lon:title"
     if (parts.length == 3) {
       final latPart = parts[0].split('=');
       final lonPart = parts[1].split('=');
@@ -53,17 +57,20 @@ class QrScannerWidgetState extends State<QrScannerWidget> with WidgetsBindingObs
         final lat = double.tryParse(latPart[1]);
         final lon = double.tryParse(lonPart[1]);
         final title = parts[2];
+
         if (lat != null && lon != null) {
           final location = '$lat:$lon:$title';
           print('Parsed location: $location'); // Add log
-          Navigator.pop(context, location);
+          widget.onScanned(location);
+          Navigator.of(context).pop;
           return;
         }
       }
     }
 
     print('Failed to parse QR code'); // Add log
-    Navigator.pop(context, null);
+    widget.onScanned('');
+    Navigator.of(context).pop;
   }
 
   @override

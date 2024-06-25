@@ -38,7 +38,7 @@ class _HomePageState extends State<HomePage> {
     _logger.i("HomePage: Loaded locations - $_locations");
   }
 
-  Future<void> _saveLocation(String location) async {
+  /*Future<void> _saveLocation(String location) async {
 
     /*final locations = prefs.getStringList('locations') ?? [];
     locations.add(location);
@@ -53,7 +53,23 @@ class _HomePageState extends State<HomePage> {
         gravity: ToastGravity.BOTTOM,
       );
     }
+  }*/
+
+  Future<void> _saveLocation(String location) async {
+    final prefs = await SharedPreferences.getInstance();
+    if (!mounted) return;
+    setState(() {
+      _locations.add(location);
+      prefs.setStringList('locations', _locations);
+    });
+    _logger.i("HomePage: Saved location - $location");
+    Fluttertoast.showToast(
+      msg: "Location saved successfully!",
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.BOTTOM,
+    );
   }
+
 
   Future<void> _saveLocationToPrefs(String location) async {
     final prefs = await SharedPreferences.getInstance();
@@ -113,8 +129,9 @@ class _HomePageState extends State<HomePage> {
     return true;
   }
 
-  Future<void> _scanQrCode() async {
+  /*Future<void> _scanQrCode(BuildContext context, Function(String) onScanned) async {
     _logger.i("HomePage: _scanQrCode called");
+
     try {
       final result = await scanQrCode(context);
       _logger.i("HomePage: QR scan result - $result");
@@ -127,7 +144,69 @@ class _HomePageState extends State<HomePage> {
     } catch (e) {
       _logger.e("HomePage: Error during QR scan - $e");
     }
+  }*/
+
+ /* Future<void> scanQrCode(BuildContext context, Function(String) onScanned) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => QrScannerWidget(
+          onScanned: onScanned,
+        ),
+      ),
+    );
+  }*/
+
+  /*Future<void> _scanQrCode() async {
+    _logger.i("HomePage: _scanQrCode called");
+
+    scanQrCode(context, (result) async {
+      _logger.i("HomePage: QR scan result - $result");
+
+      if (result != null && result.isNotEmpty) {
+        await _saveLocation(result);
+      } else {
+        _logger.e("HomePage: QR scan failed or result is empty");
+      }
+    });
+  }*/
+
+  /*Future<void> scanQrCode(BuildContext context, Function(String) onScanned) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => QrScannerWidget(onScanned: onScanned),
+      ),
+    );
+  }*/
+  Future<void> _scanQrCode() async {
+    _logger.i("HomePage: _scanQrCode called");
+
+    await scanQrCode(context, (result) async {
+      _logger.i("HomePage: QR scan result - $result");
+
+      if (result != null && result.isNotEmpty) {
+        await _saveLocation(result);
+      } else {
+        _logger.e("HomePage: QR scan failed or result is empty");
+      }
+    });
   }
+
+ /*Future<void> _scanQrCode() async {
+    _logger.i("HomePage: _scanQrCode called");
+
+    scanQrCode(context, (result) async {
+      _logger.i("HomePage: QR scan result - $result");
+
+      if (result != null && result.isNotEmpty) {
+        await _saveLocation(result);
+      } else {
+        _logger.e("HomePage: QR scan failed or result is empty");
+      }
+    });
+  }*/
+
 
   void _generateLocation() {
     final latitude = _latitudeController.text;
@@ -205,6 +284,58 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+/*
+  @override
+  Widget build(BuildContext context) {
+    _logger.i("Building Home Page");
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Home Page"),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            TextFormField(
+              controller: _latitudeController,
+              decoration: const InputDecoration(
+                labelText: "Latitude",
+              ),
+              keyboardType: TextInputType.number,
+            ),
+            const SizedBox(height: 8),
+            TextFormField(
+              controller: _longitudeController,
+              decoration: const InputDecoration(
+                labelText: "Longitude",
+              ),
+              keyboardType: TextInputType.number,
+            ),
+            const SizedBox(height: 8),
+            TextFormField(
+              controller: _locationNameController,
+              decoration: const InputDecoration(
+                labelText: "Location Name",
+              ),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: _generateLocation,
+              child: const Text("Save Location"),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: _scanQrCode,
+              child: const Text("Scan QR Code"),
+            ),
+          ],
+        ),
+      ),
+    );
+  }*/
+
   /*Widget build(BuildContext context) {
     _logger.i("Building Home Page");
 
@@ -223,4 +354,13 @@ class _HomePageState extends State<HomePage> {
 
     //return const Center(child: Text("Home"));
   }*/
+}
+
+Future<void> scanQrCode(BuildContext context, Function(String) onScanned) async {
+  await Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => QrScannerWidget(onScanned: onScanned),
+    ),
+  );
 }
