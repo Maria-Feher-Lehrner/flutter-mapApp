@@ -58,6 +58,16 @@ class _HomePageState extends State<HomePage> {
   Future<void> _saveLocation(String location) async {
     final prefs = await SharedPreferences.getInstance();
     if (!mounted) return;
+
+    if (_locations.contains(location)) {
+      Fluttertoast.showToast(
+        msg: "Location already saved!",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+      );
+      return; // Exit early if location is already saved
+    }
+
     setState(() {
       _locations.add(location);
       prefs.setStringList('locations', _locations);
